@@ -9,7 +9,7 @@ from selenium import webdriver
 USER_ID = settings.USER_ID
 PASS_WORD = settings.PASS_WORD
 TIME_TO_WAIT = 3
-NUMBER_OF_COMPANY = 5#16412
+NUMBER_OF_COMPANY = 16412
 URL_CSV_PATH = settings.URL_CSV_PATH
 DB_UNIX_SOCKET = settings.DB_UNIX_SOCKET
 DB_HOST = settings.DB_HOST
