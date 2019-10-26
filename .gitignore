@@ -1,0 +1,12 @@
+#environment variable
+.env
+
+#test file
+test_files
+
+#urls csv
+url.csv
+
+#other url csvs
+url.csv.bak
+url.csv.2.bak
