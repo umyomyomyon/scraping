@@ -5,6 +5,7 @@ import os
 import MySQLdb
 import settings
 import time
+import selenium
 from selenium import webdriver
 
 PHANTOMJS_PATH = settings.PHANTOMJS_PATH
@@ -98,7 +99,21 @@ def open_new_page(url):
     browser.switch_to_window(browser.window_handles[1])
     browser.get(url)
 
+def is_exist_casual():
+    casual_flag = False
+    try:
+        for i in range(1, 3+1):
+            feature_element = browser.find_element_by_xpath('//*[@id="contents"]/div[9]/div/dl[{0}]/dt'.format(i))
+            if feature_element.text == 'カジュアルな服装':
+                casual_flag == True
+    except selenium.common.exceptions.NoSuchElementException:
+        print('特徴が3つ未満です')
+    return casual_flag
+    
+
 def content_scraping(corsor, connector):
+    #時間系計測を行う
+    get_text_time_start = time.time()
     name_element = browser.find_element_by_class_name('companyDetail-companyName')
     position_element = browser.find_element_by_xpath('//div[@class="companyDetail-sectionBody"]/p[1]')
     job_description_element = browser.find_element_by_xpath('//div[@class="companyDetail-sectionBody"]/p[2]')
@@ -106,16 +121,21 @@ def content_scraping(corsor, connector):
     position = position_element.text
     job_description = job_description_element.text
     url = browser.current_url
+    get_text_time = time.time() - get_text_time_start
 
-    casual_flag = False
-    for i in range(1, 3+1):
-        feature_element = browser.find_element_by_xpath('//*[@id="contents"]/div[9]/div/dl[{0}]/dt'.format(i))
-        if feature_element.text == 'カジュアルな服装':
-            casual_flag == True
+    get_casual_flag_time_start = time.time()
+    casual_flag = is_exist_casual()
+    get_casual_flag_time = time.time() - get_casual_flag_time_start
 
+    db_insert_time_start = time.time()
     #----------以下DB登録処理----------#  
     #INSERT
     corsor.execute('INSERT INTO company_data SET name="{0}", url="{1}", position="{2}", description="{3}", is_casual="{4}"'.format(company_name, url, position, job_description, casual_flag))
     connector.commit()
+    db_insert_time = time.time() - db_insert_time_start
+
+    print('get_text_time:{0}(s)'.format(get_text_time))
+    print('get_casual_time:{0}(s)'.format(get_casual_flag_time))
+    print('db_insert_time:{0}(s)'.format(db_insert_time))
 
     
