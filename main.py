@@ -39,35 +39,22 @@ if __name__ == '__main__':
     )
     corsor = connector.cursor()
 
-    total_time = 0
-    number_of_data = 0
-    not_exist = 0
+    utils.main(url_arr, corsor, connector)
+
+'''
     length = len(url_arr)
     for i in range(length):
         start = time.time()
 
-        page_open_time_start = time.time()
         utils.open_new_page(url_arr[i])
-        page_open_time = time.time() - page_open_time_start
 
-        total_scraping_time_start = time.time()
         try:
             utils.content_scraping(corsor, connector)
         except selenium.common.exceptions.NoSuchElementException as e:
             print('現在掲載を停止している企業です')
-            not_exist += 1
-        total_scraping_time = time.time() - total_scraping_time_start
 
         utils.browser_close()
         processing_time = time.time() - start
         print(i)
         print('処理時間:{0}(s)'.format(processing_time))
-        total_time += processing_time
-        number_of_data += 1
-
-        print('page open time:{0}(s)'.format(page_open_time))
-        print('total_scraping_time:{0}(s)'.format(total_scraping_time))
-
-    average_processing_time = total_time / number_of_data
-    print("平均処理時間:{0}(s)".format(average_processing_time))
-    print("掲載を停止している企業数:{0}".format(not_exist))
+'''

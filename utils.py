@@ -140,4 +140,15 @@ def content_scraping(corsor, connector):
     corsor.execute('INSERT INTO company_data SET name="{0}", url="{1}", position="{2}", description="{3}", is_casual="{4}"'.format(company_name, url, position, job_description, casual_flag))
     connector.commit()
 
-    
+def main(url_arr, corsor, connector):
+    length = len(url_arr)
+    for i in range(length):
+        open_new_page(url_arr[i])
+
+        try:
+            content_scraping(corsor, connector)
+        except selenium.common.exceptions.NoSuchElementException:
+            print('現在掲載を停止している企業です')
+
+        browser_close()
+        print(i)
