@@ -85,19 +85,6 @@ def open_new_page(url):
     browser.switch_to_window(browser.window_handles[1])
     browser.get(url)
 
-def import_data(data_path):
-    if os.path.exists(data_path) == True:
-        with open(data_path, 'rb') as f:
-            data_arr = f
-        return data_arr
-    else:
-        print('データが存在しません')
-        sys.exit()
-
-def export_data(arr, data_path):
-    with open(data_path, 'wb') as f:
-        pickle.dump(arr, f)
-
 #配列をCSVに書き出し
 def export_csv(arr, csv_path):
     with open(csv_path, 'w') as f:
@@ -140,4 +127,15 @@ def content_scraping(corsor, connector):
     corsor.execute('INSERT INTO company_data SET name="{0}", url="{1}", position="{2}", description="{3}", is_casual="{4}"'.format(company_name, url, position, job_description, casual_flag))
     connector.commit()
 
-    
+def main(url_arr, corsor, connector):
+    length = len(url_arr)
+    for i in range(length):
+        open_new_page(url_arr[i])
+
+        try:
+            content_scraping(corsor, connector)
+        except selenium.common.exceptions.NoSuchElementException:
+            print('現在掲載を停止している企業です')
+
+        browser_close()
+        print(i)
