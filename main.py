@@ -26,11 +26,11 @@ if __name__ == '__main__':
     if os.path.exists(URL_PATH) == False:
         utils.move_to_company_list()
         url_arr = utils.get_url(NUMBER_OF_COMPANY)
-        utils.export_data(url_arr, URL_PATH)
+        utils.export_csv(url_arr, URL_PATH)
         utils.browser_close()
     else:
         #csvが存在していたら、csvを読み込んでurl_arrに格納する
-        url_arr = utils.import_data(URL_PATH)
+        url_arr = utils.import_csv(URL_PATH)
 
     #DB接続
     connector = MySQLdb.connect(
