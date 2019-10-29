@@ -57,7 +57,6 @@ def move_to_company_list():
     element.click()
     #別のタブで開かれるので、二つ目のタブに移動する
     browser.switch_to_window(browser.window_handles[1])
-    print('新たにタブを開き、移動しました')
 
 #全掲載企業のURLを取得
 def get_url(number_of_company):
@@ -100,6 +99,7 @@ def import_csv(csv_path):
         print('csvが存在しません')
         sys.exit()
 
+#企業の特徴にカジュアルな服装が含まれているか
 def is_exist_casual():
     casual_flag = False
     try:
@@ -112,6 +112,7 @@ def is_exist_casual():
     return casual_flag
     
 def content_scraping(corsor, connector):
+    #スクレイピング対象を見つける
     name_element = browser.find_element_by_class_name('companyDetail-companyName')
     position_element = browser.find_element_by_xpath('//div[@class="companyDetail-sectionBody"]/p[1]')
     job_description_element = browser.find_element_by_xpath('//div[@class="companyDetail-sectionBody"]/p[2]')
@@ -126,16 +127,3 @@ def content_scraping(corsor, connector):
     #INSERT
     corsor.execute('INSERT INTO company_data SET name="{0}", url="{1}", position="{2}", description="{3}", is_casual="{4}"'.format(company_name, url, position, job_description, casual_flag))
     connector.commit()
-
-def main(url_arr, corsor, connector):
-    length = len(url_arr)
-    for i in range(length):
-        open_new_page(url_arr[i])
-
-        try:
-            content_scraping(corsor, connector)
-        except selenium.common.exceptions.NoSuchElementException:
-            print('現在掲載を停止している企業です')
-
-        browser_close()
-        print(i)

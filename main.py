@@ -8,7 +8,7 @@ from selenium import webdriver
 
 USER_ID = settings.USER_ID
 PASS_WORD = settings.PASS_WORD
-TIME_TO_WAIT = 3
+TIME_TO_WAIT = 5
 NUMBER_OF_COMPANY = 16412
 URL_PATH = settings.URL_PATH
 DB_UNIX_SOCKET = settings.DB_UNIX_SOCKET
@@ -41,4 +41,14 @@ if __name__ == '__main__':
     )
     corsor = connector.cursor()
 
-    utils.main(url_arr, corsor, connector)
+    #企業ページを開き、そこかスクレイピングを行う
+    length = len(url_arr)
+    for i in range(length):
+        utils.open_new_page(url_arr[i])
+        print(i)
+        try:
+            utils.content_scraping(corsor, connector)
+        except selenium.common.exceptions.NoSuchElementException:
+            print('現在掲載を停止している企業です')
+
+        utils.browser_close()
