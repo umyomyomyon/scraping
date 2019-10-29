@@ -8,8 +8,6 @@ test_files
 url.csv
 
 #other url csvs
-url.csv.bak
-url.csv.2.bak
-url.bak
+*.bak
 .DS_Store
 __pycache__
