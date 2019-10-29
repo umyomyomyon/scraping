@@ -6,7 +6,6 @@ import MySQLdb
 import settings
 import time
 import selenium
-import pickle
 from selenium import webdriver
 
 PHANTOMJS_PATH = settings.PHANTOMJS_PATH
@@ -79,10 +78,17 @@ def browser_close():
     browser.switch_to_window(browser.window_handles[0])
     #check_current_url()
 
+#タイムアウト時に成功するまでリトライする
 def open_new_page(url):
-    browser.execute_script('window.open()')
-    browser.switch_to_window(browser.window_handles[1])
-    browser.get(url)
+    try:
+        browser.execute_script('window.open()')
+        browser.switch_to_window(browser.window_handles[1])
+        browser.get(url)
+    except selenium.common.exceptions.TimeoutException:
+        browser_close()
+        print('connection timeout')
+        print('retrying ...')
+        open_new_page(url)
 
 #配列をCSVに書き出し
 def export_csv(arr, csv_path):

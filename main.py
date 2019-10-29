@@ -41,7 +41,7 @@ if __name__ == '__main__':
     )
     corsor = connector.cursor()
 
-    #企業ページを開き、そこかスクレイピングを行う
+    #企業ページを開き、そこからスクレイピングを行う
     length = len(url_arr)
     for i in range(length):
         utils.open_new_page(url_arr[i])
