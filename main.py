@@ -16,6 +16,8 @@ DB_HOST = settings.DB_HOST
 DB_USER = settings.DB_USER
 DB_PASS_WORD = settings.DB_PASS_WORD
 DB_NAME = settings.DB_NAME
+PHANTOMJS_PATH = settings.PHANTOMJS_PATH
+NUMBER_OF_BROWSER = 10
 
 if __name__ == '__main__':
     utils.login(USER_ID, PASS_WORD)
@@ -40,21 +42,3 @@ if __name__ == '__main__':
     corsor = connector.cursor()
 
     utils.main(url_arr, corsor, connector)
-
-'''
-    length = len(url_arr)
-    for i in range(length):
-        start = time.time()
-
-        utils.open_new_page(url_arr[i])
-
-        try:
-            utils.content_scraping(corsor, connector)
-        except selenium.common.exceptions.NoSuchElementException as e:
-            print('現在掲載を停止している企業です')
-
-        utils.browser_close()
-        processing_time = time.time() - start
-        print(i)
-        print('処理時間:{0}(s)'.format(processing_time))
-'''

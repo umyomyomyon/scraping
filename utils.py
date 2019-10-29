@@ -85,19 +85,6 @@ def open_new_page(url):
     browser.switch_to_window(browser.window_handles[1])
     browser.get(url)
 
-def import_data(data_path):
-    if os.path.exists(data_path) == True:
-        with open(data_path, 'rb') as f:
-            data_arr = f
-        return data_arr
-    else:
-        print('データが存在しません')
-        sys.exit()
-
-def export_data(arr, data_path):
-    with open(data_path, 'wb') as f:
-        pickle.dump(arr, f)
-
 #配列をCSVに書き出し
 def export_csv(arr, csv_path):
     with open(csv_path, 'w') as f:
