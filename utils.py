@@ -6,6 +6,7 @@ import MySQLdb
 import settings
 import time
 import selenium
+import pickle
 from selenium import webdriver
 
 PHANTOMJS_PATH = settings.PHANTOMJS_PATH
@@ -73,31 +74,29 @@ def get_url(number_of_company):
 
     return url_arr
 
-#配列をCSVに書き出し
-def export_csv(arr, csv_path):
-    with open(csv_path, 'w') as f:
-        writer = csv.writer(f, lineterminator='\n')
-        writer.writerow(arr)
-
 #現在のタブを閉じてトップページに戻る
 def browser_close():
     browser.close()
     browser.switch_to_window(browser.window_handles[0])
     #check_current_url()
 
-def import_csv(csv_path):
-    if os.path.exists(csv_path) == True:
-        with open(csv_path, 'r') as f:
-            data = list(csv.reader(f))#二次元配列. 0番目の要素がURLの配列になっている.
-        return data[0]
-    else:
-        print('csvが存在しません')
-        sys.exit()
-
 def open_new_page(url):
     browser.execute_script('window.open()')
     browser.switch_to_window(browser.window_handles[1])
     browser.get(url)
+
+def import_data(data_path):
+    if os.path.exists(data_path) == True:
+        with open(data_path, 'rb') as f:
+            data_arr = f
+        return data_arr
+    else:
+        print('データが存在しません')
+        sys.exit()
+
+def export_data(arr, data_path):
+    with open(data_path, 'wb') as f:
+        pickle.dump(arr, f)
 
 def is_exist_casual():
     casual_flag = False

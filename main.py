@@ -10,7 +10,7 @@ USER_ID = settings.USER_ID
 PASS_WORD = settings.PASS_WORD
 TIME_TO_WAIT = 3
 NUMBER_OF_COMPANY = 16412
-URL_CSV_PATH = settings.URL_CSV_PATH
+URL_PATH = settings.URL_PATH
 DB_UNIX_SOCKET = settings.DB_UNIX_SOCKET
 DB_HOST = settings.DB_HOST
 DB_USER = settings.DB_USER
@@ -23,14 +23,14 @@ if __name__ == '__main__':
     utils.check_current_url()
 
     #csvが存在していなかったら、urlを全て配列に格納し、csvとしてエクスポートする
-    if os.path.exists(URL_CSV_PATH) == False:
+    if os.path.exists(URL_PATH) == False:
         utils.move_to_company_list()
         url_arr = utils.get_url(NUMBER_OF_COMPANY)
-        utils.export_csv(url_arr, URL_CSV_PATH)
+        utils.export_data(url_arr, URL_PATH)
         utils.browser_close()
     else:
         #csvが存在していたら、csvを読み込んでurl_arrに格納する
-        url_arr = utils.import_csv(URL_CSV_PATH)
+        url_arr = utils.import_data(URL_PATH)
 
     #DB接続
     connector = MySQLdb.connect(
@@ -42,7 +42,7 @@ if __name__ == '__main__':
     total_time = 0
     number_of_data = 0
     not_exist = 0
-    length = 100#len(url_arr)
+    length = len(url_arr)
     for i in range(length):
         start = time.time()
 
