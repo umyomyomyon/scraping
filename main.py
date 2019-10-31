@@ -43,12 +43,14 @@ if __name__ == '__main__':
 
     #企業ページを開き、そこからスクレイピングを行う
     length = len(url_arr)
-    for i in range(length):
+    for i in range(13000, length):
         utils.open_new_page(url_arr[i])
         print(i)
         try:
             utils.content_scraping(corsor, connector)
         except selenium.common.exceptions.NoSuchElementException:
             print('現在掲載を停止している企業です')
+        except MySQLdb._exceptions.ProgrammingError:
+            print('SQL programming Error')
 
         utils.browser_close()
