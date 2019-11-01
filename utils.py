@@ -8,6 +8,15 @@ import time
 import selenium
 from selenium import webdriver
 
+PHANTOMJS_PATH = settings.PHANTOMJS_PATH
+
+
+def generate_browser():
+    browser = webdriver.PhantomJS(executable_path=PHANTOMJS_PATH)
+    print('PhantomJS initializing')
+    browser.implicitly_wait(3)
+    return browser
+
 def set_wait_time(time, browser):
     browser.set_page_load_timeout(time)
 
