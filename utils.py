@@ -8,16 +8,10 @@ import time
 import selenium
 from selenium import webdriver
 
-PHANTOMJS_PATH = settings.PHANTOMJS_PATH
-
-browser = webdriver.PhantomJS(executable_path=PHANTOMJS_PATH)
-print('PhantomJS initializing')
-browser.implicitly_wait(3)
-
-def set_wait_time(time):
+def set_wait_time(time, browser):
     browser.set_page_load_timeout(time)
 
-def login(user, pass_word):
+def login(user, pass_word, browser):
     #ログインページにアクセス
     url_login = 'https://rikunabi-direct.jp/2020/login/'
     browser.get(url_login)
@@ -46,11 +40,11 @@ def login(user, pass_word):
     submit.click()
     print('ログインボタンを押しました')
 
-def check_current_url():
+def check_current_url(browser):
     current_page_url = browser.current_url
     print('現在のURL: ' + current_page_url)
 
-def move_to_company_list():
+def move_to_company_list(browser):
     #全掲載企業のページに移動する
     element = browser.find_element_by_link_text('全掲載企業')
     element.click()
@@ -58,7 +52,7 @@ def move_to_company_list():
     browser.switch_to_window(browser.window_handles[1])
 
 #全掲載企業のURLを取得
-def get_url(number_of_company):
+def get_url(number_of_company, browser):
     url_arr = []
     for i in range(2, number_of_company):
         url_xpath = '/html/body/div/div/table/tbody/tr[{0}]/td/ul/li/a'.format(i)
@@ -73,22 +67,22 @@ def get_url(number_of_company):
     return url_arr
 
 #現在のタブを閉じてトップページに戻る
-def browser_close():
+def browser_close(browser):
     browser.close()
     browser.switch_to_window(browser.window_handles[0])
     #check_current_url()
 
 #タイムアウト時に成功するまでリトライする
-def open_new_page(url):
+def open_new_page(url, browser):
     try:
         browser.execute_script('window.open()')
         browser.switch_to_window(browser.window_handles[1])
         browser.get(url)
     except selenium.common.exceptions.TimeoutException:
-        browser_close()
+        browser_close(browser)
         print('connection timeout')
         print('retrying ...')
-        open_new_page(url)
+        open_new_page(url, browser)
 
 #配列をCSVに書き出し
 def export_csv(arr, csv_path):
@@ -106,7 +100,7 @@ def import_csv(csv_path):
         sys.exit()
 
 #企業の特徴にカジュアルな服装が含まれているか
-def is_exist_casual():
+def is_exist_casual(browser):
     casual_flag = False
     try:
         for i in range(1, 3+1):
@@ -117,7 +111,7 @@ def is_exist_casual():
         print('特徴が3つ未満です')
     return casual_flag
     
-def content_scraping(corsor, connector):
+def content_scraping(corsor, connector, browser):
     #スクレイピング対象を見つける
     name_element = browser.find_element_by_class_name('companyDetail-companyName')
     position_element = browser.find_element_by_xpath('//div[@class="companyDetail-sectionBody"]/p[1]')
@@ -127,9 +121,28 @@ def content_scraping(corsor, connector):
     job_description = job_description_element.text
     url = browser.current_url
 
-    casual_flag = is_exist_casual()
+    casual_flag = is_exist_casual(browser)
 
     #----------以下DB登録処理----------#  
     #INSERT
-    corsor.execute('INSERT INTO company_data SET name="{0}", url="{1}", position="{2}", description="{3}", is_casual="{4}"'.format(company_name, url, position, job_description, casual_flag))
+    corsor.execute('INSERT INTO company_data_2 SET name="{0}", url="{1}", position="{2}", description="{3}", is_casual="{4}"'.format(company_name, url, position, job_description, casual_flag))
     connector.commit()
+
+def scraping_process(browser, url_arr, corsor, connector):
+        count = 0
+        
+        for url in url_arr:
+            open_new_page(url, browser)
+            print('{0} scraping start'.format(count))
+            check_current_url(browser)
+
+            try:
+                content_scraping(corsor, connector, browser)
+            except selenium.common.exceptions.NoSuchElementException:
+                print('現在掲載を停止している企業です')
+            except MySQLdb._exceptions.ProgrammingError:
+                print('SQL programming Error')
+
+            browser_close(browser)
+            print('{0} scraping process end.'.format(count))
+            count += 1

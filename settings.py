@@ -9,6 +9,8 @@ load_dotenv('./.env')
 
 USER_ID = os.environ.get('USER_ID')
 PASS_WORD = os.environ.get('PASS_WORD')
+USER_ID_2 = os.environ.get('USER_ID_2')
+PASS_WORD_2 = os.environ.get('PASS_WORD_2')
 URL_PATH = os.environ.get('URL_PATH')
 DB_UNIX_SOCKET = os.environ.get('DB_UNIX_SOCKET')
 DB_HOST = os.environ.get('DB_HOST')
